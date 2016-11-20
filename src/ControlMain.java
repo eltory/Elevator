@@ -17,17 +17,19 @@ import javax.swing.border.EmptyBorder;
 
 public class ControlMain extends JFrame implements Runnable {
 	private Toolkit tk;
-	private JButton B2, B1, F1, F2, F3, F4, F5, F6;
-	private Image bgImg = Toolkit.getDefaultToolkit().getImage("BG.png");
-	private static LinkedList<Person> personList=new LinkedList<Person>();
-	private Elevator[] elevators = new Elevator[3];
+	   private JButton B2, B1, F1, F2, F3, F4, F5, F6;
+	   private Image bgImg = Toolkit.getDefaultToolkit().getImage("BG.png");
+	   private static LinkedList<Person> personList = new LinkedList<Person>();
+	   private Elevator[] elevators = new Elevator[3];
 
-	private Person p1;
-	private Floor[] floor = new Floor[8];
-	int i = 0;
-	int cnt;
-	int ele;
-	public static Image [] person = new Image[9];
+	   private Person p = new Person();
+	   private Floor[] floor = new Floor[8];
+	   int i = 0;
+	   int cnt;
+	   int ele;
+	   int gg = 0;
+	   public static Image[] person = new Image[9];
+	   Timer t = new Timer();
 	/*
 	 * public static void main(String[] arguments) {
 	 * 
@@ -85,18 +87,25 @@ public class ControlMain extends JFrame implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-				p1 = new Person();
-				p1.setX(250);
-				p1.setY(floor[p1.currFloor].position.y);
-				personList.add(p1);
-				cnt++;
-				Thread.sleep(20);
+				  if(gg %500 == 0)
+			            t.schedule(new TimerTask() {
+			               @Override
+			               public void run() {
+			                  p = new Person();
+			                  p.setX(250);
+			                  p.setY(floor[p.currFloor].position.y);
+			                  personList.add(p);
+			                  cnt++;
+			               }
+			            }, 0, 7000);
+			            Thread.sleep(20);
+			            gg++;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			for(int a=0;a<cnt;a++){
 				if (personList.get(a).getX() == 400 || personList.get(a).getX() == elevators[ele].getX()) {
-					if (p1.isDisplayKeypad() == true) {
+					if (p.isDisplayKeypad() == true) {
 						long k = 3500;
 						try {
 							TouchScreen sc = new TouchScreen();
@@ -133,7 +142,7 @@ public class ControlMain extends JFrame implements Runnable {
 											openElevator(elevators[i]);
 											personList.get(a).moveBackward();
 										}
-									} else if (elevators[i].getY() < p1.getY())
+									} else if (elevators[i].getY() < p.getY())
 										elevators[i].setY(elevators[i].getY() + 2);
 									else {
 										elevators[i].setY(elevators[i].getY() - 2);
