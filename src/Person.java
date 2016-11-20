@@ -61,7 +61,7 @@ public class Person {
 	}
 
 	public void startFloor() {
-		currFloor = (int) (Math.random() * 100 % 7 + 1);
+		currFloor = (int) (Math.random() * 100 % 8 + 1);
 	}
 
 

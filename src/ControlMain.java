@@ -24,7 +24,6 @@ public class ControlMain extends JFrame implements Runnable {
 	private Image[] elevatorImg = new Image[3];
 	private Person p1;
 	private Floor[] floor = new Floor[8];
-	int[] arr = new int[8];
 	int i = 0;
 	int sX = 0;
 	int sY = 0;
@@ -64,19 +63,23 @@ public class ControlMain extends JFrame implements Runnable {
 		for (Floor s : floor) {
 			floor[i] = new Floor();
 			floor[i].position.x = sX;
-			floor[i].position.y = sY + (i) * 78;
-			arr[i] = sY + (i) * 76;
 			i++;
-
 		}
-
-		elevators[0].currWeight = 940;
+		floor[0].position.y=72;
+		floor[1].position.y=150;
+		floor[2].position.y=230;
+		floor[3].position.y=310;
+		floor[4].position.y=390;
+		floor[5].position.y=468;
+		floor[6].position.y=548;
+		floor[7].position.y=626;
+		
+		elevators[0].currWeight = 800;
 		elevators[1].currWeight = 930;
 		elevators[2].currWeight = 920;
 		p1 = new Person();
 		p1.setX(250);
 		p1.setY(468);
-		p1.wantFloor = 1;
 		// p1.makeElevatorImg();
 		this.setVisible(true);// p1.getImg().setAccelerationPriority(priority);
 	}
@@ -115,7 +118,10 @@ public class ControlMain extends JFrame implements Runnable {
 									elevators[i].setY(p1.getY());
 									openElevator(elevators[i]);
 									p1.setCount(10);
-									p1.setY(floor[6 - p1.wantFloor].position.y);
+									if(p1.wantFloor<7)
+										p1.setY(floor[6-p1.wantFloor].position.y);
+									else
+										p1.setY(floor[p1.wantFloor-1].position.y);
 								} else if (elevators[i].getY() < p1.getY())
 									elevators[i].setY(elevators[i].getY() + 2);
 								else {
