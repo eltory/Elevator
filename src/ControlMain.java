@@ -16,19 +16,18 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 public class ControlMain extends JFrame implements Runnable {
-
+	private Toolkit tk;
 	private JButton B2, B1, F1, F2, F3, F4, F5, F6;
-	private Image bgImg = Toolkit.getDefaultToolkit().getImage("BG1.png");
-
+	private Image bgImg = Toolkit.getDefaultToolkit().getImage("BG.png");
+	private static LinkedList<Person> personList=new LinkedList<Person>();
 	private Elevator[] elevators = new Elevator[3];
-	private Image[] elevatorImg = new Image[3];
+
 	private Person p1;
 	private Floor[] floor = new Floor[8];
 	int i = 0;
-	int sX = 0;
-	int sY = 0;
+	int cnt;
 	int ele;
-
+	public static Image [] person = new Image[9];
 	/*
 	 * public static void main(String[] arguments) {
 	 * 
@@ -55,14 +54,12 @@ public class ControlMain extends JFrame implements Runnable {
 		 * 1000, 700); this.add(jp);
 		 */
 		for (int i = 0; i < 3; i++) {
-			// 1 = 770
 			elevators[i] = new Elevator(577 + i * 63, 468, i);
-			elevatorImg[i] = elevators[i].getImg();
 		}
 		i = 0;
 		for (Floor s : floor) {
 			floor[i] = new Floor();
-			floor[i].position.x = sX;
+			floor[i].position.x = 250;
 			i++;
 		}
 		floor[0].position.y=72;
@@ -73,68 +70,91 @@ public class ControlMain extends JFrame implements Runnable {
 		floor[5].position.y=468;
 		floor[6].position.y=548;
 		floor[7].position.y=626;
-		
-		elevators[0].currWeight = 800;
-		elevators[1].currWeight = 930;
-		elevators[2].currWeight = 920;
-		p1 = new Person();
-		p1.setX(250);
-		p1.setY(468);
-		// p1.makeElevatorImg();
-		this.setVisible(true);// p1.getImg().setAccelerationPriority(priority);
+
+		tk=Toolkit.getDefaultToolkit();
+		// create person's image 
+		for(int i = 0; i < 5; i++){
+			person[i]=tk.createImage("Person"+(4-i)+".png");
+		}
+
+
+		this.setVisible(true);
 	}
 
 	@Override
 	public void run() {
 		while (true) {
 			try {
+				p1 = new Person();
+				p1.setX(250);
+				p1.setY(floor[p1.currFloor].position.y);
+				personList.add(p1);
+				cnt++;
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			if (p1.getX() == 400 || p1.getX() == elevators[ele].getX()) {
-				if (p1.isDisplayKeypad() == false) {
-					long k = 3500;
-					try {
-						TouchScreen sc = new TouchScreen();
-						sc.setVisible(true);
-						for (int i = 0; i < 3; ++i) {
-							if (elevators[i].canTake(p1.weight) == true) {
-								sc.setOption(p1.wantFloor, i);
-								ele = i;
-								break;
-							}
-						}
-						p1.setDisplayKeypad(true);
-						Thread.sleep(k);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				} else {
-					if (p1.getX() == elevators[ele].getX()) {
-						for (int i = 0; i < 3; i++) {
-							if (i == ele) {
-								if (elevators[i].getY() == p1.getY()) {
-									elevators[i].setY(p1.getY());
-									openElevator(elevators[i]);
-									p1.setCount(10);
-									if(p1.wantFloor<7)
-										p1.setY(floor[6-p1.wantFloor].position.y);
-									else
-										p1.setY(floor[p1.wantFloor-1].position.y);
-								} else if (elevators[i].getY() < p1.getY())
-									elevators[i].setY(elevators[i].getY() + 2);
-								else {
-									elevators[i].setY(elevators[i].getY() - 2);
+			for(int a=0;a<cnt;a++){
+				if (personList.get(a).getX() == 400 || personList.get(a).getX() == elevators[ele].getX()) {
+					if (p1.isDisplayKeypad() == true) {
+						long k = 3500;
+						try {
+							TouchScreen sc = new TouchScreen();
+							sc.setVisible(true);
+							for (int i = 0; i < 3; ++i) {
+								if (elevators[i].canTake(personList.get(a).weight) == true) {
+									sc.setOption(personList.get(a).wantFloor, i);
+									elevators[i].currWeight+=personList.get(a).weight;
+									ele = i;
+									break;
 								}
 							}
+							personList.get(a).setDisplayKeypad(true);
+							Thread.sleep(k);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
 					} else {
-						p1.setX(p1.getX() + 1);
+						if (personList.get(a).getX() == elevators[ele].getX()) {
+							for (int i = 0; i < 3; i++) {
+								if (i == ele) {
+									if (elevators[i].getY() == personList.get(a).getY()) {
+										if(personList.get(a).isEnter()==false){
+											elevators[i].setY(personList.get(a).getY());
+											openElevator(elevators[i]);
+											personList.get(a).setCount(10);
+											if(personList.get(a).wantFloor<7)
+												personList.get(a).setY(floor[6-personList.get(a).wantFloor].position.y);
+											else
+												personList.get(a).setY(floor[personList.get(a).wantFloor-1].position.y);
+											personList.get(a).setEnter(true);
+										}
+										else{
+											openElevator(elevators[i]);
+											personList.get(a).moveBackward();
+										}
+									} else if (elevators[i].getY() < p1.getY())
+										elevators[i].setY(elevators[i].getY() + 2);
+									else {
+										elevators[i].setY(elevators[i].getY() - 2);
+									}
+								}
+							}
+						} else {
+							personList.get(a).setX(personList.get(a).getX() + 1);
+						}
+					}
+				} 
+				else {
+					if(personList.get(a).isEnter()==false){
+						personList.get(a).moveForward();
+						personList.get(a).setX(personList.get(a).getX() + 1);
+					}
+					else{
+						personList.get(a).moveBackward();
+						personList.get(a).setX(personList.get(a).getX() - 1);
 					}
 				}
-			} else {
-				p1.setX(p1.getX() + 1);
 			}
 			repaint();
 		}
@@ -147,8 +167,9 @@ public class ControlMain extends JFrame implements Runnable {
 
 		for (int i = 0; i < 3; i++)
 			gContext.drawImage(elevators[i].getImg(), elevators[i].getX(), elevators[i].getY(), this);
-
-		gContext.drawImage(p1.getImg(), p1.getX(), p1.getY(), this);
+		for(int a=0;a<cnt;a++)
+			gContext.drawImage(person[personList.get(a).getMoveCount()/5], personList.get(a).getX(), personList.get(a).getY(), this);		
+		//gContext.drawImage(p1.getImg(), p1.getX(), p1.getY(), this);
 		g.drawImage(buffer, 0, 0, this);
 	}
 
@@ -156,4 +177,5 @@ public class ControlMain extends JFrame implements Runnable {
 		if (e.getOpenCount() < 49)
 			e.setOpenCount(e.getOpenCount() + 1);
 	}
+
 }

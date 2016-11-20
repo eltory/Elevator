@@ -2,6 +2,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 
+
 public class Person {
 	public int speed = 1;
 	public int count = 0;
@@ -15,13 +16,14 @@ public class Person {
 	private Toolkit tk;
 	public Image[] img = new Image[11];
 	public boolean displayKeypad = false;
-
+	public int moveCount=24;
+	public boolean enter = false;
 	Person() {
 		num++;
 		startFloor();
 		selectFloor();
 		createWeight();
-		makeElevatorImg();
+		//makeElevatorImg();
 	}
 
 	public int getX() {
@@ -61,7 +63,7 @@ public class Person {
 	}
 
 	public void startFloor() {
-		currFloor = (int) (Math.random() * 100 % 8 + 1);
+		currFloor = (int) (Math.random() * 100 % 7 + 1);
 	}
 
 
@@ -83,7 +85,7 @@ public class Person {
 		else
 			direction = 1;
 	}
-
+	/*
 	public void makeElevatorImg() {
 		tk = Toolkit.getDefaultToolkit();
 		int j = 0;
@@ -91,4 +93,34 @@ public class Person {
 			img[i] = tk.createImage("Person" + (4 - i) + ".png");
 		}
 	}
+	 */
+	public int getMoveCount() {
+		return moveCount;
+	}
+
+	public void setMoveCount(int moveCount) {
+		this.moveCount = moveCount;
+	}
+
+	public void moveForward() {
+		this.x += speed;
+		moveCount--;
+		if(moveCount < 1)
+			moveCount = 24;	
+	}
+	public void moveBackward() {
+		this.x -= speed;
+		moveCount--;
+		if(moveCount < 1)
+			moveCount = 24;
+	}
+
+	public boolean isEnter() {
+		return enter;
+	}
+
+	public void setEnter(boolean enter) {
+		this.enter = enter;
+	}
+
 }

@@ -47,6 +47,14 @@ public class Elevator {
 		makeElevatorImg(this.idx); // get elevator images
 	}
 
+	public boolean isReachTo() {
+		return reachTo;
+	}
+
+	public void setReachTo(boolean reachTo) {
+		this.reachTo = reachTo;
+	}
+
 	public boolean canTake(int personWeight){
 		if(currWeight + personWeight > capOfWeight)
 			return false;

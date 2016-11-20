@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Timer;
@@ -16,13 +17,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 
 public class TouchScreen extends JFrame {
-
+	private Toolkit tk;
 	private JPanel contentPane;
 	private String floor;
 	private int fl;
 	public static TouchScreen frame;
 	public int selFloor, canElev;
-
+	public static Image [] finger = new Image[2];
 	/**
 	 * Launch the application.
 	 */
@@ -46,12 +47,17 @@ public class TouchScreen extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		getContentPane().setLayout(null);
-	
+
 
 		contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-				aniRun();
+		aniRun();
+		tk=Toolkit.getDefaultToolkit();
+		// create person's image 
+		for(int i = 0; i < 2; i++){
+			finger[i]=tk.createImage("pointer.png");
+		}
 	}
 
 	public void aniRun() {
@@ -63,14 +69,15 @@ public class TouchScreen extends JFrame {
 		for (int i = 0; i < 12; ++i) {
 			img[i] = new ImageIcon(floor.substring(2 * i, 2 * (i + 1)) + ".png");
 		}
-
+		JPanel panel = new JPanel();
 		JLabel jl = new JLabel();
 		//jl.setBounds(0, 0, 0, 280);
 		//jl.setPreferredSize(getSize());
 		jl.setIcon(img[0]);
-		JPanel panel = new JPanel();
-		panel.add(jl);
 		
+		panel.add(jl);
+
+	
 		Timer loop = new Timer();
 		loop.schedule(new TimerTask() {
 			@Override
@@ -85,6 +92,7 @@ public class TouchScreen extends JFrame {
 				jl.setIcon(img[canElev]);
 			}
 		}, 3000);
+		
 		panel.setBounds(0, 0, 500, 500);
 		contentPane.add(panel);
 		// Timer loop = new Timer();
@@ -94,6 +102,7 @@ public class TouchScreen extends JFrame {
 				setVisible(false);
 			}
 		}, 4500);
+		
 	}
 
 	public void setOption(int f, int e){
@@ -101,10 +110,11 @@ public class TouchScreen extends JFrame {
 		this.canElev = e + 9; 
 		aniRun();
 	}
-	
 
 	public static void visible() {
 		frame.setVisible(true);
 		frame.aniRun();
 	}
+	
+
 }
