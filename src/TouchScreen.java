@@ -3,7 +3,9 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,16 +24,21 @@ public class TouchScreen extends JFrame {
 	private int fl;
 	public static TouchScreen frame;
 	public int selFloor, canElev;
+	public Image img[] = new Image[12];
+	public Image finger = null;
+	private Toolkit tk;
+	public Point[] point = new Point[8];
 
 	/**
 	 * Launch the application.
 	 */
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					frame = new TouchScreen();
-					frame.setVisible(true);
+					// frame = new TouchScreen();
+					// frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -43,65 +50,79 @@ public class TouchScreen extends JFrame {
 	 * Create the frame.
 	 */
 	public TouchScreen() {
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 800, 600);
-		getContentPane().setLayout(null);
-	
+		super("TouchScreen");
 
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(1000, 100, 765, 620);
+		getContentPane().setLayout(null);
+		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-				aniRun();
+		aniRun();
 	}
 
 	public void aniRun() {
 		floor = new String();
 		floor = "NF1F2F3F4F5F6FB1B2E1E2E3";
 
-		ImageIcon[] img = new ImageIcon[12];
+		point[6] = new Point();
+		point[6].x = 140;
+		point[6].y = 300;
+		point[7] = new Point();
+		point[7].x = 140;
+		point[7].y = 400;
 
-		for (int i = 0; i < 12; ++i) {
-			img[i] = new ImageIcon(floor.substring(2 * i, 2 * (i + 1)) + ".png");
+		for (int i = 0; i < 8; i += 2) {
+			point[i] = new Point();
+			point[i].x = 140 + (i + 2 / 2) * 120;
+			point[i].y = 300;
 		}
 
-		JLabel jl = new JLabel();
-		//jl.setBounds(0, 0, 0, 280);
-		//jl.setPreferredSize(getSize());
-		jl.setIcon(img[0]);
-		JPanel panel = new JPanel();
-		panel.add(jl);
-		
-		Timer loop = new Timer();
-		loop.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				jl.setIcon(img[selFloor]);
-			}
-		}, 1500);
+		for (int i = 1; i < 8; i += 2) {
+			point[i] = new Point();
+			point[i].x = 140 + (i + 2 / 2) * 120;
+			point[i].y = 400;
+		}
 
-		loop.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				jl.setIcon(img[canElev]);
-			}
-		}, 3000);
-		panel.setBounds(0, 0, 500, 500);
-		contentPane.add(panel);
-		// Timer loop = new Timer();
-		loop.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				setVisible(false);
-			}
-		}, 4500);
+		tk = Toolkit.getDefaultToolkit();
+
+		for (int i = 0; i < 12; ++i) {
+			img[i] = tk.createImage(floor.substring(2 * i, 2 * (i + 1)) + ".png");
+		}
+
+		finger = tk.createImage("pointer.png");
+
+		repaint();
 	}
 
-	public void setOption(int f, int e){
+	public void paint(Graphics g) {
+		Image buffer = createImage(765, 615);
+		Graphics gContext = buffer.getGraphics();
+		try {
+			gContext.drawImage(img[0], 0, 20, this);
+			g.drawImage(buffer, 0, 10, this);
+			Thread.sleep(500);
+			gContext.drawImage(finger, point[selFloor].x, point[selFloor].y, 150, 230, this);
+			g.drawImage(buffer, 0, 10, this);
+			Thread.sleep(500);
+			gContext.drawImage(img[selFloor], 0, 20, this);
+			g.drawImage(buffer, 0, 10, this);
+			Thread.sleep(500);
+			gContext.drawImage(img[canElev], 0, 20, this);
+			g.drawImage(buffer, 0, 10, this);
+			Thread.sleep(400);
+			this.setVisible(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setOption(int f, int e) {
 		this.selFloor = f;
-		this.canElev = e + 9; 
+		this.canElev = e + 9;
 		aniRun();
 	}
-	
 
 	public static void visible() {
 		frame.setVisible(true);

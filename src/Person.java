@@ -14,14 +14,53 @@ public class Person {
 	public Point position = new Point();
 	private Toolkit tk;
 	public Image[] img = new Image[11];
-	public boolean displayKeypad = false;
-
+	public boolean touchscreen = false;
+	public boolean elevator = false;
+	public int moveCount = 24;
+	public boolean enter = false;
+	int elelocation = 400;
+	int state =1;
+	public char personMove;
+	public boolean reach = false;
+	public boolean dooropen = false;
 	Person() {
 		num++;
 		startFloor();
 		selectFloor();
 		createWeight();
-		makeElevatorImg();
+		// makeElevatorImg();
+	}
+
+	public char getPersonMove() {
+		return personMove;
+	}
+
+	public void setPersonMove(char personMove) {
+		this.personMove = personMove;
+	}
+
+	public boolean isDooropen() {
+		return dooropen;
+	}
+
+	public void setDooropen(boolean dooropen) {
+		this.dooropen = dooropen;
+	}
+
+	public boolean isReach() {
+		return reach;
+	}
+
+	public void setReach(boolean reach) {
+		this.reach = reach;
+	}
+
+	public int getElelocation() {
+		return elelocation;
+	}
+
+	public void setElelocation(int elelocation) {
+		this.elelocation = elelocation;
 	}
 
 	public int getX() {
@@ -52,18 +91,25 @@ public class Person {
 		return img[count];
 	}
 
-	public boolean isDisplayKeypad() {
-		return displayKeypad;
+	public boolean isElevator() {
+		return elevator;
 	}
 
-	public void setDisplayKeypad(boolean displayKeypad) {
-		this.displayKeypad = displayKeypad;
+	public void setElevator(boolean elevator) {
+		this.elevator = elevator;
+	}
+
+	public boolean isTouchscreen() {
+		return touchscreen;
+	}
+
+	public void setTouchscreen(boolean touchscreen) {
+		this.touchscreen = touchscreen;
 	}
 
 	public void startFloor() {
-		currFloor = (int) (Math.random() * 100 % 7 + 1);
+		currFloor = (int) (Math.random() * 100 % 8);
 	}
-
 
 	public void setStartPosition(Point p) {
 		position = p;
@@ -74,8 +120,10 @@ public class Person {
 	}
 
 	public void selectFloor() {
-		while (wantFloor != currFloor) {
-			wantFloor = (int) (Math.random() * 100 % 8 + 1);
+		while (true) {
+			wantFloor = (int) (Math.random() * 100 % 8);
+			if(wantFloor != currFloor)
+				break;
 		}
 		// direction to stair
 		if (wantFloor < currFloor)
@@ -84,11 +132,50 @@ public class Person {
 			direction = 1;
 	}
 
-	public void makeElevatorImg() {
-		tk = Toolkit.getDefaultToolkit();
-		int j = 0;
-		for (int i = 0; i < 5; i++) {
-			img[i] = tk.createImage("Person" + (4 - i) + ".png");
+	public int getDirection() {
+		return direction;
+	}
+
+	public int getMoveCount() {
+		return moveCount;
+	}
+
+	public void setMoveCount(int moveCount) {
+		this.moveCount = moveCount;
+	}
+
+	public void moveForward() {
+		if(state == 1) {
+			this.x += speed;
+			moveCount--;
+			if(moveCount < 1)
+				moveCount = 24;
 		}
 	}
+
+	public void moveBackward() {
+		if(this.x > 250) {
+			this.x -= speed;
+			moveCount--;
+			if(moveCount < 1)
+				moveCount = 24;
+		}
+	}
+
+	public int getState() {
+		return state;
+	}
+
+	public void setState(int state) {
+		this.state = state;
+	}
+
+	public boolean isEnter() {
+		return enter;
+	}
+
+	public void setEnter(boolean enter) {
+		this.enter = enter;
+	}
+
 }
