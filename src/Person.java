@@ -23,6 +23,8 @@ public class Person {
 	public char personMove;
 	public boolean reach = false;
 	public boolean dooropen = false;
+	public boolean elereach=false;
+	public int whatElev;
 	Person() {
 		num++;
 		startFloor();
@@ -160,6 +162,8 @@ public class Person {
 			if(moveCount < 1)
 				moveCount = 24;
 		}
+		if(x==250)
+			moveCount=49;
 	}
 
 	public int getState() {
